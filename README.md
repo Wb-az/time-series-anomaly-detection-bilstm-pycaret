@@ -1,65 +1,66 @@
-
-<h1 align="center">Anomaly Sensor Detection - IMS Bearing NASA Acoustics and Vibration Database</h1>
-
-<h2 align="center">PyCaret vs Custom BiLSTM (Bidirectional LSTM)</h2>
+<h1 align="center">Time-Series Sensor Anomaly Detection</h1>
+<h2 align="center">PyCaret vs Custom BiLSTM on the IMS Bearing NASA Dataset</h2>
 
 ## Introduction
 
-This project will use four unsupervised anomaly detection models from Pycaret to detect anomalies in sensor-bearing vibration signals. These models are Decision Tree and Support Vector Machine. In addition, a customed LSTM model will be built using the PyTorch Framework to autoencode and decode the signal input. The data comprises three vibrational sensor readings from the NASA Acoustics and Vibration Database. The datasets contained text files with 1-second vibration signal snapshots (20,480 data points) recorded at 5 and 10 minutes intervals at a sampling rate of 20 kHz. 
+This project compares unsupervised anomaly detection approaches for identifying abnormal patterns in bearing vibration sensor data. It benchmarks six PyCaret-based [1] anomaly detection models against a custom Bidirectional LSTM (BiLSTM) autoencoder implemented in PyTorch, using the IMS Bearing dataset derived from the NASA Acoustics and Vibration Database.
 
-•	Pycaret is a high-performance, open-source, low-code library for ML modelling. It provides highly-efficient CPU/GPU implementations of ML models for cluster analysis, classification, time series and anomaly detection. Snap ML accelerates ML algorithms through system awareness and offers novel ML algorithms with best-in-class accuracy. Pycaret also automates ML workflows and aims to democratise ML. For more information, please visit [Pycaret](https://pycaret.org/)[1]. 
-•	PyTorch is a machine learning framework used for computer vision and natural language processing applications, initially developed by Meta AI and now part of the Linux Foundation umbrella. For more information, please visit [PyTorch](https://pytorch.org/).
+The study focuses on whether low-code anomaly detection methods can achieve performance comparable to a custom deep learning approach while reducing implementation complexity and development effort.
 
-Choi et al. conducted a study of the impact of deep Learning reported on anomaly detection in time-series data [7]. Several works on these datasets have been reported to prevent early anomalies successfully using deep learning architectures [2][3][4][5]. These works followed a semi-supervised approach to detecting failure. However, there is no strong rationale for selecting a specific train data subset. In addition, the models are not challenged against unseen data (another dataset from the three groups. Other studies have produced successful results but only used a tiny fraction of the data [5].
+## Problem
 
+Industrial systems generate continuous streams of sensor time-series data, and early detection of anomalous behaviour is important for predictive maintenance, fault diagnosis, and operational reliability. In this setting, anomaly detection is challenging because labelled anomalies are often unavailable, contamination levels may be unknown, and model performance can vary across unseen datasets.
 
-In this work, we will use deep learning architectures, a BiLSTM, to predict anomalies in an unsupervised fashion. The Autoencoder decoder will be trained in all datasets without separating the anomalies portion and evaluated on test dataset 3. In addition, Cluster, Histogram, iForest, KNN, MCD and SVM anomaly detection models will be trained and assessed on the same datasets. Further, the performance of the unsupervised models will be compared [6] using the nonparametric statistics Friedman test and the posthoc test Friedman-Conover.
+Several prior studies have reported strong results on bearing fault detection using deep learning and semi-supervised approaches [2][3][4][5][7]. However, these approaches often rely on selected train subsets or are evaluated on limited portions of the available data. This makes it difficult to assess how well they generalise to unseen datasets or whether lower-complexity methods could provide comparable performance.
 
-The aim of this study is to determine whether PyCaret offers a similar or better performance than Artificial Neural Networks but at low code, therefore, optimising resources.
+## Objective
 
+The aim of this study is to compare classical unsupervised anomaly detection models with a custom BiLSTM autoencoder on the same bearing sensor datasets. In particular, the project evaluates whether PyCaret offers similar or better performance than a neural-network-based approach while optimising resources and reducing coding effort.
 
+Model performance is assessed using cluster quality metrics and non-parametric statistical comparison, including the Friedman test and Friedman-Conover post hoc analysis [6].
 
 ## Data
-The data were sourced from [kaggle](https://www.kaggle.com/datasets/vinayak123tyagi/bearing-dataset) and comprises three datasets of vibrational sensor readings from the NASA Acoustics and Vibration Database. The datasets contained text files with 1-second vibration signal snapshots (20,480 data points) recorded at 5 and 10-minute intervals at a sampling rate of 20 kHz.
+
+The data were sourced from [Kaggle](https://www.kaggle.com/datasets/vinayak123tyagi/bearing-dataset) and comprise three datasets of vibration sensor readings from the NASA Acoustics and Vibration Database. The datasets contain text files with 1-second vibration signal snapshots (20,480 data points) recorded at 5- and 10-minute intervals at a sampling rate of 20 kHz.
 
 ## Methods
 
-### Experimental setup PyCaret Models
+### Experimental Setup: PyCaret Models
 
-__Table 1__ Anomaly Models - PyCaret
+This project evaluates the following unsupervised anomaly detection models available through PyCaret:
 
-|ID|Name|Reference|
-|---|---|---|
-|cluster|Clustering-Based Local Outlier|pyod\.models\.cblof\.CBLOF|
-|iforest|Isolation Forest|pyod\.models\.iforest\.IForest|
-|histogram|Histogram-based Outlier Detection|pyod\.models\.hbos\.HBOS|
-|knn|K-Nearest Neighbors Detector|pyod\.models\.knn\.KNN|
-|svm|One-class SVM detector|pyod\.models\.ocsvm\.OCSVM|
-|mcd|Minimum Covariance Determinant|pyod\.models\.mcd\.MCD|
+| ID        | Name                               | Reference                      |
+|-----------|------------------------------------|--------------------------------|
+| cluster   | Clustering-Based Local Outlier     | pyod.models.cblof.CBLOF        |
+| iforest   | Isolation Forest                   | pyod.models.iforest.IForest    |
+| histogram | Histogram-based Outlier Detection  | pyod.models.hbos.HBOS          |
+| knn       | K-Nearest Neighbours Detector      | pyod.models.knn.KNN            |
+| svm       | One-Class SVM Detector             | pyod.models.ocsvm.OCSVM        |
+| mcd       | Minimum Covariance Determinant     | pyod.models.mcd.MCD            |
 
-### Experimental Setup for BiLSTM
+PyCaret is a high-performance, open-source low-code machine learning library that supports anomaly detection and automates key parts of the ML workflow [1].
 
-All experiments were run for 50 epochs, learning rate of 2 e-4 and a batch size of 32. The architecture used was a configurable Bidirectional-LSTM. For this work, only one layer with 32 hidden units and a dropout of 0.1 was used. The encoder-decoder can be customised to multiple BiLSTM layers.
+### Experimental Setup: BiLSTM
 
+A custom Bidirectional LSTM autoencoder was implemented in PyTorch to encode and reconstruct the vibration signal input. All experiments were run for 50 epochs with a learning rate of 2e-4 and a batch size of 32. The architecture used one BiLSTM layer with 32 hidden units and a dropout of 0.1.
 
-__Table 2__ BILSTM Experiomental Setup Models
-|Exp|Model|Loss|Optim|
-|---|---|---|---|
-|1|bilstm|mae\_loss|adam|
-|2|bilstm|huber\_loss|adam|
-|3|bilstm|mae\_loss|adamw|
-|4|bilstm|huber\_loss|adamw|
+| Exp | Model  | Loss       | Optim |
+|-----|--------|------------|-------|
+| 1   | bilstm | mae_loss   | adam  |
+| 2   | bilstm | huber_loss | adam  |
+| 3   | bilstm | mae_loss   | adamw |
+| 4   | bilstm | huber_loss | adamw |
 
-The results from each model will be further analysed using cluster metrics three metrics, the silhouette coefficient, Calinski-Harabaz and Davies-Boulding indexes.
+### Evaluation
 
-1. **Silhouette Score** is the mean Silhouette Coefficient for all clusters, which is calculated using the mean intra-cluster distance and the mean nearest-cluster distance. This score is between -1 and 1; the higher the score, the more well-defined and distinct the clusters are.
+The models were compared using cluster quality metrics and non-parametric statistical testing.
 
-1. **Calinski-Harabaz Index** is calculated using the between-cluster and within-cluster dispersion to measure the distinctiveness between groups. Like the Silhouette Score, the higher the score, the more well-defined the clusters are. This score has no bound, meaning no ‘acceptable’ or ‘good’ value exists.
+Cluster metrics:
+1. **Silhouette Score** measures how well-separated the clusters are. Values range from -1 to 1, with higher values indicating better-defined clusters.
+2. **Calinski-Harabasz Index** measures between-cluster separation relative to within-cluster dispersion. Higher values indicate better-defined clusters.
+3. **Davies-Bouldin Index** measures similarity between each cluster and its most similar cluster. Lower values indicate better separation.
 
-3. **Davies-Bouldin Index** is the average similarity of each cluster with its most similar cluster. Unlike the previous two metrics, this score measures the similarity of the clusters, meaning that the lower the score, the better the separation between the clusters. Zero is the lowest possible score. Values closer to zero indicate a better partition. The usage of centroid distance limits the distance metric to Euclidean space.
-
-The disadvantage of the three metrics is that they generally score higher for convex clusters than other concepts of clusters. Therefore further compare their performance with **non-parametric statistics**.
-
+Because these metrics can favour convex cluster structures, model performance was also compared using **non-parametric statistical analysis**, specifically the Friedman test and Friedman-Conover post hoc test [6].
 
 ## Results
 
@@ -275,7 +276,7 @@ We can conclude that the PyCaret Anomalies models selected in this work and the 
 [4] https://sabtainahmadml.medium.com/condition-monitoring-through-diagnosis-of-anomalies-lstm-based-unsupervised-ml-approach-5f0565735dff
 <br>
 </br>
-[5] Zhang, R.; Peng, Z.; Wu, L.; Yao, B.; Guan, Y. Fault Diagnosis from Raw Sensor Data Using Deep Neural Networks Considering Temporal Coherence. Sensors 2017, 17, 549. https://doi.org/10.3390/s1703054
+[5] Zhang, R.; Peng, Z.; Wu, L.; Yao, B.; Guan, Y. Fault Diagnosis from Raw Sensor Data Using Deep Neural Networks Considering Temporal Coherence. Sensors 2017, 17, 549. https://www.mdpi.com/1424-8220/17/3/549
 <br>
 </br>
 [6] Goldstein, M. and Uchida, S. (2016) ‘A comparative evaluation of unsupervised anomaly detection algorithms for multivariate data’, PLOS ONE, 11(4). doi:10.1371/journal.pone.0152173. 
