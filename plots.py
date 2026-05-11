@@ -3,6 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+__all__ = ['view_per_channel', 'view_all', 'plot_predicted_anomalies',
+           'plot_anomaly_threshold', 'plot_loss', 'plot_raw_data',
+           'plot_reconstruction', 'plot_scores_distribution',
+           'bilstm_predicted_anomalies', 'save_plot', 'scatter_view',
+           'scatter_anomalies_plot']
+
 plots_dir = os.path.join(os.getcwd(), 'plots')
 
 os.makedirs(plots_dir, exist_ok=True)
